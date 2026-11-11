@@ -8,77 +8,80 @@
 
 ---
 
-## Problème métier
+## 1. Problème métier
 
-Une entreprise du secteur tourisme souhaite automatiser la collecte de données météo sur ses destinations afin d’optimiser les recommandations proposées aux clients (application mobile, site web).
+Une entreprise du secteur tourisme veut automatiser la collecte de données météo sur ses destinations afin d’améliorer les recommandations proposées aux clients (application mobile, site web).
 
-## Architecture ETL
+## 2. Architecture
 
 ```
-extract.py  →  transform.py  →  load.py
-   (API)         (nettoyage)      (SQLite)
+                    PIPELINE ETL
+                         │
+         ┌──────────────┴─────────────┐
+         ▼               ▼               ▼
+    extract.py     transform.py      load.py
+   (API REST)      (nettoyage)      (SQLite)
+         │               │               │
+         └──────────────┴─────────────┘
+                         │
+                    data/meteo.db
+                         +
+                 data/meteo_export.json
 ```
 
-## Technologies
+**Flux** :
+1. `extract.py` interroge l’API Open-Meteo
+2. `transform.py` nettoie et normalise les données
+3. `load.py` insère dans SQLite
+4. Un export JSON lisible est généré automatiquement
 
-- Python 3
-- `requests` (appel API)
-- SQLite (stockage relationnel)
-- API Open-Meteo (gratuite, sans clé API)
+## 3. Structure du projet
 
-## Destinations suivies
+```
+meteo-tourisme/
+├── src/
+│   ├── config.py       # Liste des destinations
+│   ├── extract.py      # Appel API
+│   ├── transform.py    # Nettoyage
+│   ├── load.py         # Insertion SQLite
+│   └── export.py       # Export JSON
+├── data/
+│   ├── meteo.db        # Base SQLite
+│   └── meteo_export.json
+├── main.py             # Orchestration
+├── requirements.txt
+└── README.md
+```
 
-Dakar, Paris, New York, Tokyo, Marrakech
+## 4. Technologies
 
-## Installation
+| Composant | Technologie |
+|-----------|-------------|
+| Langage | Python 3 |
+| API | Open-Meteo (gratuite, sans clé) |
+| Stockage | SQLite |
+| Format lisible | JSON |
+
+## 5. Installation et exécution
 
 ```bash
 git clone https://github.com/ousmajalloh405-eng/meteo-tourisme.git
 cd meteo-tourisme
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-```
-
-## Exécution
-
-```bash
 python3 main.py
 ```
 
-Le pipeline :
-1. Crée la base `data/meteo.db`
-2. Insère les destinations
-3. Interroge l’API pour chaque ville
-4. Nettoie les données
-5. Insère les observations
-6. Affiche un résumé
+## 6. Résultats
 
-## Structure de la base
+Après exécution :
+- Base `data/meteo.db` alimentée
+- Fichier `data/meteo_export.json` lisible
+- Affichage des températures des 5 destinations
 
-- `destinations` : ville, pays, coordonnées
-- `observations` : température, humidité, précipitations, vent, date
+## 7. Compétences pour le CV
 
-## Notions travaillées
-
-- Appel d’API REST (JSON)
-- Pipeline ETL (Extract – Transform – Load)
-- Gestion des valeurs manquantes
-- Modélisation relationnelle simple
-- Index SQL
-- Organisation de projet Python
-
-## Évolutions possibles
-
-- Passage à PostgreSQL
-- Conteneurisation Docker
-- Orchestration avec Airflow (planification quotidienne)
-- Ajout de prévisions sur plusieurs jours
-- API interne pour l’application mobile
-
-## Compétences pour le CV
-
-Développement d’un pipeline ETL Python collectant des données météo via API publique, avec nettoyage et stockage dans une base relationnelle.
+Développement d’un pipeline ETL Python collectant des données météo via API publique, avec nettoyage, stockage relationnel et export JSON.
 
 ---
 
