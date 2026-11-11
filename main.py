@@ -9,6 +9,7 @@ from config import DESTINATIONS
 from extract import extraire_meteo
 from transform import transformer
 from load import initialiser_base, charger_destinations, charger_observations
+from export import exporter_json
 
 
 DB_PATH = Path(__file__).parent / "data" / "meteo.db"
@@ -34,6 +35,10 @@ def run_pipeline():
 
     nb = charger_observations(conn, observations)
     print(f"\n{nb} observations insérées dans {DB_PATH}")
+
+    # Export JSON lisible
+    json_path = Path(__file__).parent / "data" / "meteo_export.json"
+    exporter_json(DB_PATH, json_path)
 
     print("\n=== Dernières observations ===")
     cur = conn.execute("""
